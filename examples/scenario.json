@@ -1,0 +1,48 @@
+{
+  "config": {
+    "low_cost_threshold": 5.0,
+    "critical_max_miss_rate": 0.05
+  },
+  "interfaces": [
+    {
+      "id": "pay-api",
+      "critical": true,
+      "slo": {
+        "availability_target": 0.999,
+        "max_detection_latency_seconds": 60
+      }
+    },
+    {
+      "id": "search-api",
+      "slo": {
+        "availability_target": 0.99,
+        "max_detection_latency_seconds": 120
+      }
+    }
+  ],
+  "entries": [
+    {"id": "pay-api:global-lb", "interface_id": "pay-api", "critical": true},
+    {"id": "pay-api:partner-direct", "interface_id": "pay-api"},
+    {"id": "search-api:web", "interface_id": "search-api"}
+  ],
+  "candidates": [
+    {"id": "p-pay-use1", "interface_id": "pay-api", "entry_id": "pay-api:global-lb",
+     "region": "us-east-1", "dns_zone": "dns-primary",
+     "interval_seconds": 30, "cost_per_month": 12.0, "miss_rate": 0.02},
+    {"id": "p-pay-euw1", "interface_id": "pay-api", "entry_id": "pay-api:global-lb",
+     "region": "eu-west-1", "dns_zone": "dns-secondary",
+     "interval_seconds": 30, "cost_per_month": 12.0, "miss_rate": 0.02},
+    {"id": "p-pay-partner", "interface_id": "pay-api", "entry_id": "pay-api:partner-direct",
+     "region": "ap-southeast-1", "dns_zone": "dns-primary",
+     "interval_seconds": 60, "cost_per_month": 8.0, "miss_rate": 0.03},
+    {"id": "p-pay-cheap", "interface_id": "pay-api", "entry_id": "pay-api:partner-direct",
+     "region": "us-east-1", "dns_zone": "dns-primary",
+     "interval_seconds": 300, "cost_per_month": 1.5, "miss_rate": 0.10},
+    {"id": "p-search-use1", "interface_id": "search-api", "entry_id": "search-api:web",
+     "region": "us-east-1", "dns_zone": "dns-primary",
+     "interval_seconds": 60, "cost_per_month": 6.0, "miss_rate": 0.02},
+    {"id": "p-search-euw1", "interface_id": "search-api", "entry_id": "search-api:web",
+     "region": "eu-west-1", "dns_zone": "dns-secondary",
+     "interval_seconds": 60, "cost_per_month": 6.0, "miss_rate": 0.02}
+  ]
+}
